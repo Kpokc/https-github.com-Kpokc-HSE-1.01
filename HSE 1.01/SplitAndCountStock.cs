@@ -20,30 +20,59 @@ namespace HSE_1._01
 
             Range excelRange = excelSheet.UsedRange;
 
+            Worksheet newWorksheet;
+
+            // Used range forward into array object
             object[,] values = (object[,])excelRange.Value2;
 
-            int NumRow = 1;
-            int NumCols = 13;
+            //msg.sendMessage(values[29, 15].ToString());
 
-            while (NumRow < values.GetLength(0))
+            List<string> eaList = new List<string>();
+            eaList.Add("AE Stock");
+
+            // AE array length is same as spreadsheet's (+1 as excel first cell starts from 1:1)
+            /*string[,] aeArray = new string[,] { };
+            msg.sendMessage((aeArray.Length).ToString());*/
+            
+            // Loop throughout "Material" column
+            for (int i = 2; i <= values.Length/15; i++)
             {
-                for (int c = 1; c <= NumCols; c++)
+                if (values[i, 1].ToString().Contains("AE CARDS"))
                 {
-                    msg.sendMessage(Convert.ToString(values[NumRow, c]));
-                }
-                NumRow++;
-            }
+                    for (int y = 0; y < 15; y++)
+                    {
+                        eaList.Add(Convert.ToString(values[i, y + 1]));
 
+                        //msg.sendMessage(aeArray[i, y].ToString());
+                    }
+
+                }
+            }
+            msg.sendMessage("List count = " + (eaList.Count/16).ToString());
+
+            newWorksheet = excelBook.Worksheets.Add();
+            newWorksheet.Name = "AE Stock";
+            int row = 1;
+            int col = 1;
+            for (int i = 1; i < eaList.Count; i++)
+            {
+                if (col == 16) {
+                    row++;
+                    col = 1;
+                }
+                newWorksheet.Cells[row, col].Value = eaList[i];
+                col++;
+            }
 
             var filesCount = 0;
             var cabinetCount = 0;
             int rowCount = excelRange.Rows.Count;
 
-            List<string> sheetList = new List<string>();
+            
 
-            int row = 1;
+            
 
-            for (int i = 2; i <= rowCount; i++)
+            /*for (int i = 2; i <= rowCount; i++)
             {
                 row++;
                 // Get Document header text
@@ -54,7 +83,7 @@ namespace HSE_1._01
                 {
                     //string sheetName = "AE Stock";
                     //addSheetCopyToSheet(sheetName, sheetList, i, row, ref excelSheet, ref excelBook);
-                    /*// If Cards
+                    *//*// If Cards
                     if (cellValue.Contains("AE CARDS")) {
                         excelSheet.Range[excelSheet.Cells[i, 1], excelSheet.Cells[i, 13]].Interior.ColorIndex = 15;
                     }
@@ -62,7 +91,7 @@ namespace HSE_1._01
                     if (cellValue.Contains("AE REGISTERS"))
                     {
                         excelSheet.Range[excelSheet.Cells[i, 1], excelSheet.Cells[i, 13]].Interior.ColorIndex = 36;
-                    }*/
+                    }*//*
                     filesCount++;
                 }
 
@@ -71,14 +100,14 @@ namespace HSE_1._01
                 {
                     //string sheetName = "CLTrial Stock";
                     //addSheetCopyToSheet(sheetName, sheetList, i, row, ref excelSheet, ref excelBook);
-                    /*// If Box
+                    *//*// If Box
                     if (excelSheet.Cells[i, 6].value.ToUpper() == "BOX") {
                         excelSheet.Range[excelSheet.Cells[i, 1], excelSheet.Cells[i, 13]].Interior.ColorIndex = 4;
                     }
                     // If Envelope
                     else if (excelSheet.Cells[i, 6].value.ToUpper() == "ENVELOPE") {
                         excelSheet.Range[excelSheet.Cells[i, 1], excelSheet.Cells[i, 13]].Interior.ColorIndex = 6;
-                    }*/
+                    }*//*
                 }
 
                 // HAEM Department
@@ -86,7 +115,7 @@ namespace HSE_1._01
                 {
                     //string sheetName = "HAEM Stock";
                     //addSheetCopyToSheet(sheetName, sheetList, i, row, ref excelSheet, ref excelBook);
-                    /*// If HSE Box
+                    *//*// If HSE Box
                     if (cellValue.Contains("HSE_BOX")) {
                         excelSheet.Range[excelSheet.Cells[i, 1], excelSheet.Cells[i, 13]].Interior.ColorIndex = 10;
                     }
@@ -94,7 +123,7 @@ namespace HSE_1._01
                     if (cellValue.Contains("SSL_BOX"))
                     {
                         excelSheet.Range[excelSheet.Cells[i, 1], excelSheet.Cells[i, 13]].Interior.ColorIndex = 12;
-                    }*/
+                    }*//*
                 }
 
                 // N&D Department
@@ -102,8 +131,8 @@ namespace HSE_1._01
                 {
                     //string sheetName = "N&D Stock";
                     //addSheetCopyToSheet(sheetName, sheetList, i, row, ref excelSheet, ref excelBook);
-                    /*excelSheet.Range[excelSheet.Cells[i, 1], excelSheet.Cells[i, 13]].Interior.ColorIndex = 24;
-                    cabinetCount++;*/
+                    *//*excelSheet.Range[excelSheet.Cells[i, 1], excelSheet.Cells[i, 13]].Interior.ColorIndex = 24;
+                    cabinetCount++;*//*
                 }
 
                 // PCCC Department
@@ -111,7 +140,7 @@ namespace HSE_1._01
                 {
                     //string sheetName = "PCCC Stock";
                     //addSheetCopyToSheet(sheetName, sheetList, i, row, ref excelSheet, ref excelBook);
-                    /*// If HSE Box
+                    *//*// If HSE Box
                     if (cellValue.Contains("BOX") || cellValue.Contains("FILES"))
                     {
                         excelSheet.Range[excelSheet.Cells[i, 1], excelSheet.Cells[i, 13]].Interior.ColorIndex = 19;
@@ -120,15 +149,16 @@ namespace HSE_1._01
                     if (cellValue.Contains("CABINET"))
                     {
                         excelSheet.Range[excelSheet.Cells[i, 1], excelSheet.Cells[i, 13]].Interior.ColorIndex = 20;
-                    }*/
+                    }*//*
                 }
-            }
+            }*/
             msg.sendMessage("AE :" + filesCount.ToString());
             msg.sendMessage("N&D " + cabinetCount.ToString() + " " + DateTime.Now.ToString("MM/dd/yyyy h:mm tt"));
 
         }
 
-       /* static void addSheetCopyToSheet(string sheetName, List<string> sheetList, int i, int row,  ref _Worksheet excelSheet, ref Workbook excelBook)
+
+        /*static void addSheetCopyToSheet(string sheetName, List<string> sheetList, int i, int row, ref _Worksheet excelSheet, ref Workbook excelBook)
         {
             Form1 msg = new Form1();
 
