@@ -9,19 +9,6 @@ using Range = Microsoft.Office.Interop.Excel.Range;
 
 namespace HSE_1._01
 {
-    public class Stocks
-    {
-        // Auto-implemented properties.
-        public string Description { get; set; }
-        public string Unit { get; set; }
-        public int Qty { get; set; }
-
-        /*Stocks eaStock = new Stocks { Description = "EaStocks", Unit = "Box", Qty = 10 };
-        Console.WriteLine(cat.Name);*/
-        // Class - ----------------------------------Stock Name ---------- Unit ---Qty
-    }
-
-
     class SplitAndCountStock
     {
         Application excelApp = new Microsoft.Office.Interop.Excel.Application();
@@ -36,36 +23,59 @@ namespace HSE_1._01
             // Used range forward into array object
             object[,] values = (object[,])excelRange.Value2;
 
-            // Department Lists
+            // AE Department Lists and array
             List<string> aeList = new List<string>();
-            // Class - ----------------------------------Stock Name ---------- Unit ---Qty
-            Stocks aeStock1 = new Stocks { Description = "AE Stocks", Unit = "Cards", Qty = 0 };
-            Stocks aeStock2 = new Stocks { Description = "AE Stocks", Unit = "Registers", Qty = 0 };
-            Stocks aeStock3 = new Stocks { Description = "AE Stocks", Unit = "Fracture", Qty = 0 };
+            string[,] aeArray = new string[3, 3];
+            aeArray[0, 0] = "Cards";
+            aeArray[0, 1] = "0";
+            aeArray[1, 0] = "Registers";
+            aeArray[1, 1] = "0";
+            aeArray[2, 0] = "Fracture";
+            aeArray[2, 1] = "0";
 
+            // CT Department Lists and array
             List<string> ctList = new List<string>();
-            // Class - ----------------------------------Stock Name ---------- Unit ---Qty
-            Stocks ctStock1 = new Stocks { Description = "CT Stocks", Unit = "Box", Qty = 0 };
-            Stocks ctStock2 = new Stocks { Description = "CT Stocks", Unit = "Envelope", Qty = 0 };
+            string[,] ctArray = new string[3, 3];
+            ctArray[0, 0] = "Box";
+            ctArray[0, 1] = "0";
+            ctArray[1, 0] = "Envelope";
+            ctArray[1, 1] = "0";
+            ctArray[2, 0] = "";
+            ctArray[2, 1] = "";
 
+            // HAEM Department Lists and array
             List<string> haemList = new List<string>();
-            // Class - ----------------------------------Stock Name ---------- Unit ---Qty
-            Stocks haemStock1 = new Stocks { Description = "HAEM Stocks", Unit = "HSE Box", Qty = 0 };
-            Stocks haemStock2 = new Stocks { Description = "HAEM Stocks", Unit = "SSL Box", Qty = 0 };
+            string[,] haemArray = new string[3, 3];
+            haemArray[0, 0] = "HSE Box";
+            haemArray[0, 1] = "0";
+            haemArray[1, 0] = "SSL Box";
+            haemArray[1, 1] = "0";
+            haemArray[2, 0] = "";
+            haemArray[2, 1] = "";
 
+            // N+D Department Lists and array
             List<string> ndList = new List<string>();
-            // Class - ----------------------------------Stock Name ---------- Unit ---Qty
-            Stocks ndStock1 = new Stocks { Description = "N+D Stocks", Unit = "ND Box", Qty = 0 };
+            string[,] ndArray = new string[3, 3];
+            ndArray[0, 0] = "ND Box";
+            ndArray[0, 1] = "0";
+            ndArray[1, 0] = "";
+            ndArray[1, 1] = "";
+            ndArray[2, 0] = "";
+            ndArray[2, 1] = "";
 
+            // PCCC Department Lists and array
             List<string> pcccList = new List<string>();
-            // Class - ----------------------------------Stock Name ---------- Unit ---Qty
-            Stocks pcccStock1 = new Stocks { Description = "PCCC Stocks", Unit = "PCCC Box + Files", Qty = 0 };
-            Stocks pcccStock2 = new Stocks { Description = "PCCC Stocks", Unit = "PCCC Cabinet", Qty = 0 };
+            string[,] pcccArray = new string[3, 3];
+            pcccArray[0, 0] = "PCCC Box + Files";
+            pcccArray[0, 1] = "0";
+            pcccArray[1, 0] = "PCCC Cabinet";
+            pcccArray[1, 1] = "0";
+            pcccArray[2, 0] = "";
+            pcccArray[2, 1] = "";
 
-            // Loop throughout "Material" column
-            for (int i = 1; i <= values.Length / 15; i++)
+            // Loop throughout "Material" column "-5" as last 5 rows are counts
+            for (int i = 1; i <= (values.Length / 15)-5; i++)
             {
-                //msg.sendMessage(values[i, 1].ToString());
                 // AE Stock count
                 if (values[i, 1].ToString().Contains("AE CARDS") || values[i, 1].ToString().Contains("AE REGISTERS") || values[i, 1].ToString().Contains("AE FRACTURE"))
                 {
@@ -76,20 +86,27 @@ namespace HSE_1._01
                     }
 
                     // Add to Cards Stock (Material Column)
-                    if (values[i, 1].ToString().Contains("AE CARDS")){
-                        aeStock1.Qty += Int16.Parse(values[i, 10].ToString());
+                    if (values[i, 1].ToString().Contains("AE CARDS"))
+                    {
+                        int num = Int16.Parse(aeArray[0, 1]);
+                        num += Int16.Parse(values[i, 10].ToString());
+                        aeArray[0, 1] = num.ToString();
                     }
 
                     // Add to Registers Stock (Material Column)
                     if (values[i, 1].ToString().Contains("AE REGISTERS"))
                     {
-                        aeStock2.Qty += Int16.Parse(values[i, 10].ToString());
+                        int num = Int16.Parse(aeArray[1, 1]);
+                        num += Int16.Parse(values[i, 10].ToString());
+                        aeArray[1, 1] = num.ToString();
                     }
 
                     // Add to Fracture Stock (Material Column)
                     if (values[i, 1].ToString().Contains("AE FRACTURE"))
                     {
-                        aeStock3.Qty += Int16.Parse(values[i, 10].ToString());
+                        int num = Int16.Parse(aeArray[2, 1]);
+                        num += Int16.Parse(values[i, 10].ToString());
+                        aeArray[2, 1] = num.ToString();
                     }
                 }
 
@@ -104,13 +121,17 @@ namespace HSE_1._01
                     // Add to Box Stock (Batch Column)
                     if (values[i, 6].ToString().Contains("BOX"))
                     {
-                        ctStock1.Qty += Int16.Parse(values[i, 10].ToString());
+                        int num = Int16.Parse(ctArray[0, 1]);
+                        num += Int16.Parse(values[i, 10].ToString());
+                        ctArray[0, 1] = num.ToString();
                     }
 
                     // Add to Envelope Stock (Batch Column)
                     if (values[i, 6].ToString().Contains("ENVELOPE"))
                     {
-                        ctStock2.Qty += Int16.Parse(values[i, 10].ToString());
+                        int num = Int16.Parse(ctArray[1, 1]);
+                        num += Int16.Parse(values[i, 10].ToString());
+                        ctArray[1, 1] = num.ToString();
                     }
                 }
 
@@ -125,13 +146,17 @@ namespace HSE_1._01
                     // Add to Fracture Stock (Material Column)
                     if (values[i, 1].ToString().Contains("HSE_BOX"))
                     {
-                        haemStock1.Qty += Int16.Parse(values[i, 10].ToString());
+                        int num = Int16.Parse(haemArray[0, 1]);
+                        num += Int16.Parse(values[i, 10].ToString());
+                        haemArray[0, 1] = num.ToString();
                     }
 
                     // Add to Fracture Stock (Material Column)
                     if (values[i, 1].ToString().Contains("SSL_BOX"))
                     {
-                        haemStock2.Qty += Int16.Parse(values[i, 10].ToString());
+                        int num = Int16.Parse(haemArray[1, 1]);
+                        num += Int16.Parse(values[i, 10].ToString());
+                        haemArray[1, 1] = num.ToString();
                     }
                 }
 
@@ -143,7 +168,9 @@ namespace HSE_1._01
                         ndList.Add(Convert.ToString(values[i, y + 1]));
                     }
 
-                    ndStock1.Qty += Int16.Parse(values[i, 10].ToString());
+                    int num = Int16.Parse(ndArray[0, 1]);
+                    num += Int16.Parse(values[i, 10].ToString());
+                    ndArray[0, 1] = num.ToString();
                 }
 
                 // PCCC Stock count
@@ -157,32 +184,30 @@ namespace HSE_1._01
                     // Add to Cards Stock (Material Column)
                     if (values[i, 1].ToString().Contains("BOX") || values[i, 1].ToString().Contains("FILES"))
                     {
-                        pcccStock1.Qty += Int16.Parse(values[i, 10].ToString());
+                        int num = Int16.Parse(pcccArray[0, 1]);
+                        num += Int16.Parse(values[i, 10].ToString());
+                        pcccArray[0, 1] = num.ToString();
                     }
 
                     // Add to Cards Stock (Material Column)
                     if (values[i, 1].ToString().Contains("CABINET"))
                     {
-                        pcccStock2.Qty += Int16.Parse(values[i, 10].ToString());
+                        int num = Int16.Parse(pcccArray[1, 1]);
+                        num += Int16.Parse(values[i, 10].ToString());
+                        pcccArray[1, 1] = num.ToString();
                     }
                 }
             }
 
             // From List to sheet
-            createSheet(aeList, "AE Stocks", ref excelBook);
-            createSheet(ctList, "CT Stocks", ref excelBook);
-            createSheet(haemList, "HAEM Stocks", ref excelBook);
-            createSheet(ndList, "N+D Stocks", ref excelBook);
-            createSheet(pcccList, "PCCC Stocks", ref excelBook);
-
+            createSheet(aeList, "AE Stocks", aeArray, ref excelBook);
+            createSheet(ctList, "CT Stocks", ctArray, ref excelBook);
+            createSheet(haemList, "HAEM Stocks", haemArray, ref excelBook);
+            createSheet(ndList, "N+D Stocks", ndArray, ref excelBook);
+            createSheet(pcccList, "PCCC Stocks", pcccArray, ref excelBook);
         }
 
-        /*static List<string> retlist() {
-            List<string> lName = new List<string>();
-            return lName;
-        }*/
-
-        static void createSheet(List<string> arrayList, string sheetName, ref Workbook excelBook) 
+        static void createSheet(List<string> arrayList, string sheetName, string[,] array_count, ref Workbook excelBook) 
         {
             Form1 msg = new Form1();
             Worksheet newWorksheet;
@@ -215,6 +240,11 @@ namespace HSE_1._01
             newWorksheet.Columns["K:L"].ColumnWidth = 10;
             newWorksheet.Columns["M:O"].ColumnWidth = 17;
 
+            newWorksheet.Columns["C:C"].HorizontalAlignment = XlHAlign.xlHAlignCenter;
+            newWorksheet.Columns["H:H"].HorizontalAlignment = XlHAlign.xlHAlignCenter;
+            newWorksheet.Columns["J:J"].HorizontalAlignment = XlHAlign.xlHAlignCenter;
+            newWorksheet.Columns["M:O"].HorizontalAlignment = XlHAlign.xlHAlignCenter;
+
             // 2D array length and width
             string[,] arr = new string[((arrayList.Count) / 15), 15];
 
@@ -239,11 +269,15 @@ namespace HSE_1._01
                 range2 = "O" + ((arrayList.Count / 15)+1).ToString();
             }
 
-            //msg.sendMessage("1 = " + range1 + " 2 = " + range2);
-
             // Array to sheet
             newWorksheet.Range[range1, range2].Value2 = arr;
 
+            //Heading of counted stock
+            newWorksheet.Cells[1, 17].Value2 = sheetName;
+            // Counted stock
+            string rangeA = "Q2";
+            string rangeB = "R4";
+            newWorksheet.Range[rangeA, rangeB].Value2 = array_count;
         }
     }
 }

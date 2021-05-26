@@ -33,7 +33,7 @@ namespace HSE_1._01
                     excelSheet.Name = "Shipments";
                     //ShipmentsReceits(ref excelSheet);
                 }
-                else if (excelSheet.Cells[2, 4].value == "HSE3")
+                else if (excelSheet.Cells[2, 4].value.Contains("HSE"))
                 {
                     SplitAndCountStock openStockClass = new SplitAndCountStock();
                     excelSheet.Name = "Current HSE3 stock";
