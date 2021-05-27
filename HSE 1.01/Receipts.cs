@@ -81,6 +81,7 @@ namespace HSE_1._01
                     {7, 0}
                 };
 
+            // Block that colors receipt sheet
             for (int i = 2; i <= excelRange.Rows.Count; i++)
             {
                 /// Below block gets week number of each next "row" ///
@@ -118,13 +119,7 @@ namespace HSE_1._01
                 }
             }
 
-            
-            int numberOfDeliveries = 0;
-            int numberOfPicks = 0;
-
-            int numberOfFilesPicked = 0;
-            int numberOfBoxesPicked = 0;
-
+            // Block that inserts line between receipts
             var tempNum = excelSheet.Cells[2, 1].value;
             int rowCount = excelRange.Rows.Count;
             for (int i = 2; i <= rowCount; i++)
@@ -132,7 +127,17 @@ namespace HSE_1._01
                 /// compares temporary receipt number / shipment to each next rows///
                 if (tempNum != excelSheet.Cells[i, 1].value)
                 {
-                    
+                    // Document header text value to upper
+                    var cellValue = excelSheet.Cells[i - 1, 9].value.ToUpper();
+                    // Check if cell value contains any of dictionary locations
+                    foreach (string key in locations.Keys)
+                    {
+                        // Add one to each location found in cell
+                        if (cellValue.Contains(key.ToUpper()))
+                        {
+                            numberOfTrips[locations[key], 1]++;
+                        }
+                    }
 
 
                     tempNum = excelSheet.Cells[i, 1].value;
@@ -141,6 +146,22 @@ namespace HSE_1._01
                     excelSheet.Range[excelSheet.Cells[i, 1], excelSheet.Cells[i, 13]].Interior.ColorIndex = 15;
                     /// ads one extra row to row count (rowNum) due to blank row added ///
                     rowCount += 1;
+                }
+
+                // When gets to last row (as receipt/pick can take only one row)
+                if (i == rowCount)
+                {
+                    // Document header text value to upper
+                    var cellValue = excelSheet.Cells[i - 1, 9].value.ToUpper();
+                    // Check if cell value contains any of dictionary locations
+                    foreach (string key in locations.Keys)
+                    {
+                        // Add one to each location found in cell
+                        if (cellValue.Contains(key.ToUpper()))
+                        {
+                            numberOfTrips[locations[key], 1]++;
+                        }
+                    }
                 }
             }
         }
