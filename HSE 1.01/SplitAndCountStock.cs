@@ -20,6 +20,11 @@ namespace HSE_1._01
 
             Range excelRange = excelSheet.UsedRange;
 
+            int rowCount = excelRange.Rows.Count;
+
+            /*Range bRangeMulti = excelSheet.get_Range("A"+(rowCount - 5).ToString(), "A" + rowCount.ToString());
+            bRangeMulti.Delete(XlDeleteShiftDirection.xlShiftUp);*/
+
             // Used range forward into array object
             object[,] values = (object[,])excelRange.Value2;
 

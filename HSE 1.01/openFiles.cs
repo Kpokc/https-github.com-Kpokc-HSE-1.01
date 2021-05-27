@@ -17,37 +17,76 @@ namespace HSE_1._01
         {
             for (int file = 0; file < filesArray.Length; file++){
 
-                Workbook excelBook = excelApp.Workbooks.Open(filesArray[file]);
-                _Worksheet excelSheet = excelBook.Sheets[1];
-                Range excelRange = excelSheet.UsedRange;
-
-                //
-                string sheetCellValue = excelSheet.Cells[2, 2].value;
-                if (sheetCellValue == "102" || sheetCellValue == "101")
+                try
                 {
-                    excelSheet.Name = "Receipt";
-                    //ShipmentsReceits(ref excelSheet);
+                    Workbook excelBook = excelApp.Workbooks.Open(filesArray[file]);
+                    _Worksheet excelSheet = excelBook.Sheets[1];
+                    Range excelRange = excelSheet.UsedRange;
+
+                    // Delete two left columns
+                    int colCount = excelRange.Columns.Count;
+                    for (int twoLeftColumns = 1; twoLeftColumns <= 2; twoLeftColumns++)
+                    {
+                        Range column = (Range)excelSheet.Columns[1];
+                        column.Delete();
+                    }
+
+                    // Delete top five rows from Backup
+                    for (int fiveToprows = 1; fiveToprows <= 5; fiveToprows++)
+                    {
+                        Range line = (Range)excelSheet.Rows[1];
+                        line.Delete();
+                    }
+
+                    // Delete bottom five rows from Backup
+                    int rowCount = excelRange.Rows.Count;
+                    for (int fiveToprows = 1; fiveToprows <= 5; fiveToprows++)
+                    {
+                        Range line = (Range)excelSheet.Rows[rowCount - 4];
+                        line.Delete();
+                    }
+
+                    // Delete Second row
+                    Range midLine = (Range)excelSheet.Rows[2];
+                    midLine.Delete();
+
+                    //Forward ExcelBook
+                    string sheetCellValue = excelSheet.Cells[2, 2].value;
+                    if (sheetCellValue == "102" || sheetCellValue == "101")
+                    {
+                        excelSheet.Name = "Receipt";
+                        //ShipmentsReceits(ref excelSheet);
+                    }
+                    else if (sheetCellValue == "602" || sheetCellValue == "601")
+                    {
+                        excelSheet.Name = "Shipments";
+                        //ShipmentsReceits(ref excelSheet);
+                    }
+                    else if (excelSheet.Cells[4, 2].value.Contains("HSE"))
+                    {
+                        SplitAndCountStock openStockClass = new SplitAndCountStock();
+                        excelSheet.Name = "Current HSE3 stock";
+                        openStockClass.Stock(ref excelSheet, ref excelBook);
+
+                    }
+
+                    excelBook.SaveAs(@"C:\Users\ssladmin\Desktop\Weekly rep\HSE 2 Invoice.xlsx");
+                    excelBook.Close(true);
+                    excelApp.Quit();
+                    System.Runtime.InteropServices.Marshal.ReleaseComObject(excelApp);
                 }
-                else if (sheetCellValue == "602" || sheetCellValue == "601")
+
+                catch (Exception ex)
                 {
-                    excelSheet.Name = "Shipments";
-                    //ShipmentsReceits(ref excelSheet);
+                    Form1 msg = new Form1();
+                    msg.sendMessage("Error occurred " + ex);
                 }
-                else if (excelSheet.Cells[2, 4].value.Contains("HSE"))
+
+                finally
                 {
-                    SplitAndCountStock openStockClass = new SplitAndCountStock();
-                    excelSheet.Name = "Current HSE3 stock";
-                    openStockClass.Stock(ref excelSheet, ref excelBook);
-
+                    GC.Collect();
+                    GC.WaitForPendingFinalizers();
                 }
-
-                excelBook.SaveAs(@"C:\Users\ssladmin\Desktop\Weekly rep\HSE 2 Invoice.xlsx");
-                excelBook.Close(true);
-                excelApp.Quit();
-                System.Runtime.InteropServices.Marshal.ReleaseComObject(excelApp);
-
-                GC.Collect();
-                GC.WaitForPendingFinalizers();
             }
         }
     }
