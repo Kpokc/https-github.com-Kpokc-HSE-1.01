@@ -56,30 +56,18 @@ namespace HSE_1._01
 
 
             //BELOW is used only for PCCC invoicing in future could be re-factored into class
-            // Location Dictionary
-            Dictionary<string, int> locations = new Dictionary<string, int>()
-                {
-                    { "Shantalla", 0 },
-                    { "Athenry", 1 },
-                    { "Tuam", 2 },
-                    { "Loughrea", 3 },
-                    { "Doughiska", 4 },
-                    { "Mountbellew", 5 },
-                    { "Ballinasloe", 6 },
-                    { "Mervue", 7 }
-                };
 
-            // Number trip per locations in Location Dictionary 
-            int[,] numberOfTrips = {
-                    {0, 0},
-                    {1, 0},
-                    {2, 0},
-                    {3, 0},
-                    {4, 0},
-                    {5, 0},
-                    {6, 0},
-                    {7, 0}
-                };
+            // PCCC Department Lists and array
+            string[,] pcccLocationArray = {
+                { "Shantalla", "0" },
+                { "Athenry", "0" },
+                { "Tuam", "0" },
+                { "Loughrea", "0" },
+                { "Doughiska", "0" },
+                { "Mountbellew", "0" },
+                { "Ballinasloe", "0" },
+                { "Mervue", "0" }
+            };
 
             // Block that colors receipt sheet
             for (int i = 2; i <= excelRange.Rows.Count; i++)
@@ -130,15 +118,16 @@ namespace HSE_1._01
                     // Document header text value to upper
                     var cellValue = excelSheet.Cells[i - 1, 9].value.ToUpper();
                     // Check if cell value contains any of dictionary locations
-                    foreach (string key in locations.Keys)
+                    for (int l = 0; l < pcccLocationArray.Length / 2; l++)
                     {
                         // Add one to each location found in cell
-                        if (cellValue.Contains(key.ToUpper()))
+                        if (cellValue.Contains(pcccLocationArray[l, 0].ToUpper()))
                         {
-                            numberOfTrips[locations[key], 1]++;
+                            int num = Int16.Parse(pcccLocationArray[l, 1]);
+                            num++;
+                            pcccLocationArray[l, 1] = num.ToString();
                         }
                     }
-
 
                     tempNum = excelSheet.Cells[i, 1].value;
                     Range line = (Range)excelSheet.Rows[i];
@@ -154,12 +143,14 @@ namespace HSE_1._01
                     // Document header text value to upper
                     var cellValue = excelSheet.Cells[i - 1, 9].value.ToUpper();
                     // Check if cell value contains any of dictionary locations
-                    foreach (string key in locations.Keys)
+                    for (int l = 0; l < pcccLocationArray.Length / 2; l++)
                     {
                         // Add one to each location found in cell
-                        if (cellValue.Contains(key.ToUpper()))
+                        if (cellValue.Contains(pcccLocationArray[l, 0].ToUpper()))
                         {
-                            numberOfTrips[locations[key], 1]++;
+                            int num = Int16.Parse(pcccLocationArray[l, 1]);
+                            num++;
+                            pcccLocationArray[l, 1] = num.ToString();
                         }
                     }
                 }
