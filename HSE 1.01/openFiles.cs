@@ -27,15 +27,19 @@ namespace HSE_1._01
                     string sheetCellValue = excelSheet.Cells[2, 2].value;
                     if (sheetCellValue == "102" || sheetCellValue == "101")
                     {
-                        excelSheet.Name = "Receipt";
-                        //ShipmentsReceits(ref excelSheet);
+                        Receipts forward = new Receipts();
+                        excelSheet.Name = "HSE Receipts";
+                        forward.Receipt(ref excelSheet, ref excelBook);
                     }
                     else if (sheetCellValue == "602" || sheetCellValue == "601")
                     {
-                        excelSheet.Name = "Shipments";
+                        excelSheet.Name = "HSE Shipments";
                         //ShipmentsReceits(ref excelSheet);
                     }
-                    else 
+
+                    // Temporary comment Stock section
+
+                    /*else 
                     {
                         // Delete two left columns
                         int colCount = excelRange.Columns.Count;
@@ -69,12 +73,12 @@ namespace HSE_1._01
 
                         if (excelSheet.Cells[2, 4].value.Contains("HSE"))
                         {
-                            SplitAndCountStock openStockClass = new SplitAndCountStock();
+                            SplitAndCountStock forward = new SplitAndCountStock();
                             excelSheet.Name = "Current HSE3 stock";
-                            openStockClass.Stock(ref excelSheet, ref excelBook);
+                            forward.Stock(ref excelSheet, ref excelBook);
 
                         }
-                    }
+                    }*/
                     
                     // This block should be removed or moved somewhere else
                     excelBook.SaveAs(@"C:\Users\ssladmin\Desktop\Weekly rep\HSE 2 Invoice.xlsx");
