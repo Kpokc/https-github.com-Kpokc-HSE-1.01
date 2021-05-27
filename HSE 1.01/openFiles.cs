@@ -64,6 +64,9 @@ namespace HSE_1._01
                         Range midLine = (Range)excelSheet.Rows[2];
                         midLine.Delete();
 
+                        // Borders
+                        excelRange.Borders.LineStyle = XlLineStyle.xlContinuous;
+
                         if (excelSheet.Cells[2, 4].value.Contains("HSE"))
                         {
                             SplitAndCountStock openStockClass = new SplitAndCountStock();

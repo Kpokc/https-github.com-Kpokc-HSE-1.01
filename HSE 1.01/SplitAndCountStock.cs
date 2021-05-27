@@ -314,6 +314,7 @@ namespace HSE_1._01
             newWorksheet.Columns["M:O"].ColumnWidth = 17;
             newWorksheet.Columns["Q:Q"].ColumnWidth = 16;
 
+            // Align Center
             newWorksheet.Columns["C:C"].HorizontalAlignment = XlHAlign.xlHAlignCenter;
             newWorksheet.Columns["H:H"].HorizontalAlignment = XlHAlign.xlHAlignCenter;
             newWorksheet.Columns["J:J"].HorizontalAlignment = XlHAlign.xlHAlignCenter;
@@ -343,17 +344,21 @@ namespace HSE_1._01
             if (arrayList.Count != 0) {
                 range2 = "O" + ((arrayList.Count / 15)+1).ToString();
             }
-
             // Array to sheet
             newWorksheet.Range[range1, range2].Value2 = arr;
+            // Borders from top left cell to bottom right
+            Range excelRange = newWorksheet.Range["A1", range2];
+            excelRange.Borders.LineStyle = XlLineStyle.xlContinuous;
+
 
             //Heading of counted stock
             newWorksheet.Cells[1, 17].Value2 = sheetName;
             // Counted stock
-            
             string rangeA = "Q2";
             string rangeB = "R5";
             newWorksheet.Range[rangeA, rangeB].Value2 = array_count;
+            Range excelRangeSmall = newWorksheet.Range["Q1", "R5"];
+            excelRangeSmall.Borders.LineStyle = XlLineStyle.xlContinuous;
 
         }
     }
