@@ -23,33 +23,6 @@ namespace HSE_1._01
                     _Worksheet excelSheet = excelBook.Sheets[1];
                     Range excelRange = excelSheet.UsedRange;
 
-                    // Delete two left columns
-                    int colCount = excelRange.Columns.Count;
-                    for (int twoLeftColumns = 1; twoLeftColumns <= 2; twoLeftColumns++)
-                    {
-                        Range column = (Range)excelSheet.Columns[1];
-                        column.Delete();
-                    }
-
-                    // Delete top five rows from Backup
-                    for (int fiveToprows = 1; fiveToprows <= 5; fiveToprows++)
-                    {
-                        Range line = (Range)excelSheet.Rows[1];
-                        line.Delete();
-                    }
-
-                    // Delete bottom five rows from Backup
-                    int rowCount = excelRange.Rows.Count;
-                    for (int fiveToprows = 1; fiveToprows <= 5; fiveToprows++)
-                    {
-                        Range line = (Range)excelSheet.Rows[rowCount - 4];
-                        line.Delete();
-                    }
-
-                    // Delete Second row
-                    Range midLine = (Range)excelSheet.Rows[2];
-                    midLine.Delete();
-
                     //Forward ExcelBook
                     string sheetCellValue = excelSheet.Cells[2, 2].value;
                     if (sheetCellValue == "102" || sheetCellValue == "101")
@@ -62,14 +35,45 @@ namespace HSE_1._01
                         excelSheet.Name = "Shipments";
                         //ShipmentsReceits(ref excelSheet);
                     }
-                    else if (excelSheet.Cells[4, 2].value.Contains("HSE"))
+                    else 
                     {
-                        SplitAndCountStock openStockClass = new SplitAndCountStock();
-                        excelSheet.Name = "Current HSE3 stock";
-                        openStockClass.Stock(ref excelSheet, ref excelBook);
+                        // Delete two left columns
+                        int colCount = excelRange.Columns.Count;
+                        for (int twoLeftColumns = 1; twoLeftColumns <= 2; twoLeftColumns++)
+                        {
+                            Range column = (Range)excelSheet.Columns[1];
+                            column.Delete();
+                        }
 
+                        // Delete top five rows from Backup
+                        for (int fiveToprows = 1; fiveToprows <= 5; fiveToprows++)
+                        {
+                            Range line = (Range)excelSheet.Rows[1];
+                            line.Delete();
+                        }
+
+                        // Delete bottom five rows from Backup
+                        int rowCount = excelRange.Rows.Count;
+                        for (int fiveToprows = 1; fiveToprows <= 5; fiveToprows++)
+                        {
+                            Range line = (Range)excelSheet.Rows[rowCount - 4];
+                            line.Delete();
+                        }
+
+                        // Delete Second row
+                        Range midLine = (Range)excelSheet.Rows[2];
+                        midLine.Delete();
+
+                        if (excelSheet.Cells[2, 4].value.Contains("HSE"))
+                        {
+                            SplitAndCountStock openStockClass = new SplitAndCountStock();
+                            excelSheet.Name = "Current HSE3 stock";
+                            openStockClass.Stock(ref excelSheet, ref excelBook);
+
+                        }
                     }
-
+                    
+                    // This block should be removed or moved somewhere else
                     excelBook.SaveAs(@"C:\Users\ssladmin\Desktop\Weekly rep\HSE 2 Invoice.xlsx");
                     excelBook.Close(true);
                     excelApp.Quit();
@@ -86,6 +90,10 @@ namespace HSE_1._01
                 {
                     GC.Collect();
                     GC.WaitForPendingFinalizers();
+
+                    // Notify User that Reports were finished
+                    Form1 msg = new Form1();
+                    msg.sendMessage("Finished!");
                 }
             }
         }

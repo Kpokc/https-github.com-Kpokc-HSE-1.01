@@ -100,10 +100,10 @@ namespace HSE_1._01
             bloodArray[3, 1] = "0";
 
             // Loop throughout "Material" column "-5" as last 5 rows are counts
-            for (int i = 1; i <= (values.Length / 15)-5; i++)
+            for (int i = 1; i <= (values.Length / 15); i++)
             {
                 //msg.sendMessage(values[i, 1].ToString());
-                // AE Stock count ------------------------------------ADD "-5" TO values.Length if using Original BACKUP
+                // AE Stock count
                 if (values[i, 1].ToString().Contains("AE CARDS") || values[i, 1].ToString().Contains("AE REGISTERS") || values[i, 1].ToString().Contains("AE FRACTURE"))
                 {
                     // All available stock to list
@@ -277,8 +277,6 @@ namespace HSE_1._01
             createSheet(ndList, "N+D Stocks", ndArray, ref excelBook);
             createSheet(pcccList, "PCCC Stocks", pcccArray, ref excelBook);
             createSheet(bloodList, "Blood Stocks", bloodArray, ref excelBook);
-
-            msg.sendMessage("Finished!");
 
         }
 
