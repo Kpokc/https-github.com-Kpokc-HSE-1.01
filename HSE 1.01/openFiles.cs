@@ -17,8 +17,8 @@ namespace HSE_1._01
         {
             for (int file = 0; file < filesArray.Length; file++){
 
-                try
-                {
+                /*try
+                {*/
                     Workbook excelBook = excelApp.Workbooks.Open(filesArray[file]);
                     _Worksheet excelSheet = excelBook.Sheets[1];
                     Range excelRange = excelSheet.UsedRange;
@@ -85,23 +85,23 @@ namespace HSE_1._01
                     excelBook.Close(true);
                     excelApp.Quit();
                     System.Runtime.InteropServices.Marshal.ReleaseComObject(excelApp);
-                }
+            /*}
 
                 catch (Exception ex)
-                {
-                    Form1 msg = new Form1();
+            {
+                Form1 msg = new Form1();
                     msg.sendMessage("Error occurred " + ex);
-                }
+            }
 
                 finally
-                {
+            {*/
                     GC.Collect();
                     GC.WaitForPendingFinalizers();
 
-                    // Notify User that Reports were finished
+                /*    // Notify User that Reports were finished
                     Form1 msg = new Form1();
                     msg.sendMessage("Finished!");
-                }
+                }*/
             }
         }
     }

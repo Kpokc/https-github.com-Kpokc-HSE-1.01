@@ -54,9 +54,6 @@ namespace HSE_1._01
             string reversal;
             var reversalExists = false; // used later to send notification
 
-            ////////////////////////////////////////////////////////////////////////////////////
-            //BELOW is used only for PCCC invoicing in future could be re-factored into class
-
             // PCCC Department Lists and array
             string[,] pcccLocationArray = {
                 // LOCATION // NUMBER OF TRIPS // FILES RECEIVED // BOXES RECEIVED // CABINETS RECEIVED
@@ -68,6 +65,16 @@ namespace HSE_1._01
                 { "Mountbellew", "0", "0", "0", "0" },
                 { "Ballinasloe", "0", "0", "0", "0" },
                 { "Mervue", "0", "0", "0", "0" }
+            };
+            /////////////////////////////////////////////////////////////////////////////////////
+            
+            // AE Department Lists and array
+            string[,] aeArray = {
+                // Unit // QTY
+                { "Nr of Receipts", "0" },
+                { "Cards", "0"},
+                { "Register", "0"},
+                { "Fracture", "0"}
             };
             /////////////////////////////////////////////////////////////////////////////////////
 
@@ -110,7 +117,6 @@ namespace HSE_1._01
             }
 
             // Block that inserts line between receipts
-            var materialCell = "";
             var documentHeaderCell = "";
             var tempNum = excelSheet.Cells[2, 1].value;
             int rowCount = excelRange.Rows.Count;
@@ -119,8 +125,10 @@ namespace HSE_1._01
                 /// compares temporary receipt number / shipment to each next rows///
                 if (tempNum != excelSheet.Cells[i, 1].value)
                 {
+
+                    ////////////////////////////////////////   PCCC BLOCK   //////////////////////////////////////////////////////////
                     // Document header text value to upper
-                    var cellValue = excelSheet.Cells[i - 1, 9].value.ToUpper();    /// This is the difference  between Upper and lower IF sections
+                    var cellValue = excelSheet.Cells[i, 9].value.ToUpper();
 
                     // Check if cell value contains any of the locations
                     for (int l = 0; l < 8; l++)
@@ -133,8 +141,7 @@ namespace HSE_1._01
                             pcccLocationArray[l, 1] = num.ToString();
 
                             // Add file qty to Location
-                            materialCell = excelSheet.Cells[i - 1, 6].value.ToUpper();  /// This is the difference  between Upper and lower IF sections
-                            if ((materialCell.Contains("PCCC") && cellValue.Contains("FILE")))
+                            if ((cellValue.Contains("FILE")))
                             {
                                 documentHeaderCell = excelSheet.Cells[i, 9].value.ToUpper();
                                 int findStr = documentHeaderCell.IndexOf("FILE");
@@ -145,91 +152,101 @@ namespace HSE_1._01
                             }
 
                             // Add box qty to Location
-                            if (materialCell.Contains("PCCC BOX"))
+                            if (cellValue.Contains("B_"))
                             {
                                 documentHeaderCell = excelSheet.Cells[i, 9].value.ToUpper();
-                                int findStr = documentHeaderCell.IndexOf("B_PCCC");
+                                int findStr = documentHeaderCell.IndexOf("B_");
                                 string number = documentHeaderCell.Substring(0, findStr);
-                                int fileNum = Int16.Parse(pcccLocationArray[l, 2]);
+                                int fileNum = Int16.Parse(pcccLocationArray[l, 3]);
                                 fileNum += Int32.Parse(number);
                                 pcccLocationArray[l, 3] = fileNum.ToString();
                             }
 
                             // Add Cabinets qty to Location
-                            if (materialCell.Contains("PCCC CABINET"))
+                            if (cellValue.Contains("CABINET"))
                             {
                                 documentHeaderCell = excelSheet.Cells[i, 9].value.ToUpper();
                                 int findStr = documentHeaderCell.IndexOf("CABINET");
                                 string number = documentHeaderCell.Substring(0, findStr);
-                                int fileNum = Int16.Parse(pcccLocationArray[l, 2]);
+                                int fileNum = Int16.Parse(pcccLocationArray[l, 4]);
                                 fileNum += Int32.Parse(number);
                                 pcccLocationArray[l, 4] = fileNum.ToString();
                             }
                         }
                     }
-                    
+                    ///////////////////////////////////////////////////////////////////////////////////////////////////////////
+                    var materialCellValue = excelSheet.Cells[i, 6].value.ToUpper();
 
+                    if (materialCellValue.ToString().Contains("AE CARDS") || materialCellValue.ToString().Contains("AE REGISTERS") || materialCellValue.ToString().Contains("AE FRACTURE"))
+                    {
+                        if (!cellValue.Contains("PART OF"))
+                        {
+                            int receiptsNum = Int16.Parse(aeArray[0, 1]);
+                            receiptsNum++;
+                            aeArray[0, 1] = receiptsNum.ToString();
+                        
+                            // Add to Cards Stock (Material Column)
+                            if (materialCellValue.Contains("AE CARDS"))
+                            {
+                                documentHeaderCell = excelSheet.Cells[i, 9].value.ToUpper();
+                                int findStr = documentHeaderCell.IndexOf("B_");
+                                string number = documentHeaderCell.Substring(0, findStr);
+                                int fileNum = Int16.Parse(aeArray[1, 1]);
+                                fileNum += Int32.Parse(number);
+                                aeArray[1, 1] = fileNum.ToString();
+                            }
+
+                            // Add to Registers Stock (Material Column)
+                            if (materialCellValue.Contains("AE REGISTERS"))
+                            {
+                                documentHeaderCell = excelSheet.Cells[i, 9].value.ToUpper();
+                                int findStr = documentHeaderCell.IndexOf("REGISTER");
+                                string number = documentHeaderCell.Substring(0, findStr);
+                                int fileNum = Int16.Parse(aeArray[2, 1]);
+                                fileNum += Int32.Parse(number);
+                                aeArray[2, 1] = fileNum.ToString();
+                            }
+
+                            // Add to Fracture Stock (Material Column)
+                            if (materialCellValue.Contains("AE FRACTURE"))
+                            {
+                                documentHeaderCell = excelSheet.Cells[i, 9].value.ToUpper();
+                                int findStr = documentHeaderCell.IndexOf("FRACTURE");
+                                string number = documentHeaderCell.Substring(0, findStr);
+                                int fileNum = Int16.Parse(aeArray[3, 1]);
+                                fileNum += Int32.Parse(number);
+                                aeArray[3, 1] = fileNum.ToString();
+
+                            }
+                        }
+                    }
 
                     tempNum = excelSheet.Cells[i, 1].value;
+                }
+
+            }
+
+            // Add lines between receipts
+            var tNum = excelSheet.Cells[2, 1].value;
+            int rCount = excelRange.Rows.Count;
+            for (int i = 2; i <= rCount; i++)
+            {
+                if (tNum != excelSheet.Cells[i, 1].value)
+                {
+                    tNum = excelSheet.Cells[i, 1].value;
                     Range line = (Range)excelSheet.Rows[i];
                     line.Insert();
                     excelSheet.Range[excelSheet.Cells[i, 1], excelSheet.Cells[i, 13]].Interior.ColorIndex = 15;
                     /// ads one extra row to row count (rowNum) due to blank row added ///
-                    rowCount += 1;
-                }
-
-                // When gets to last row (as receipt/pick can take only one row)
-                if (i == rowCount)
-                {
-                    // Document header text value to upper
-                    var cellValue = excelSheet.Cells[i, 9].value.ToUpper();    /// This is the difference  between Upper and lower IF sections
-                    // Check if cell value contains any of the locations
-                    for (int l = 0; l < 8; l++)
-                    {
-                        // Add one to each location if found in cell
-                        if (cellValue.Contains(pcccLocationArray[l, 0].ToUpper()))
-                        {
-                            int num = Int16.Parse(pcccLocationArray[l, 1]);
-                            num++;
-                            pcccLocationArray[l, 1] = num.ToString();
-
-                            // Add file qty to Location
-                            materialCell = excelSheet.Cells[i, 6].value.ToUpper();   /// This is the difference  between Upper and lower IF sections
-                            if ((materialCell.Contains("PCCC") && cellValue.Contains("FILE")))
-                            {
-                                documentHeaderCell = excelSheet.Cells[i, 9].value.ToUpper();
-                                int findStr = documentHeaderCell.IndexOf("FILE");
-                                string number = documentHeaderCell.Substring(0, findStr);
-                                int fileNum = Int16.Parse(pcccLocationArray[l, 2]);
-                                fileNum += Int32.Parse(number);
-                                pcccLocationArray[l, 2] = fileNum.ToString();
-                            }
-
-                            // Add box qty to Location
-                            if (materialCell.Contains("PCCC BOX"))
-                            {
-                                documentHeaderCell = excelSheet.Cells[i, 9].value.ToUpper();
-                                int findStr = documentHeaderCell.IndexOf("B_PCCC");
-                                string number = documentHeaderCell.Substring(0, findStr);
-                                int fileNum = Int16.Parse(pcccLocationArray[l, 2]);
-                                fileNum += Int32.Parse(number);
-                                pcccLocationArray[l, 3] = fileNum.ToString();
-                            }
-
-                            // Add Cabinets qty to Location
-                            if (materialCell.Contains("PCCC CABINET"))
-                            {
-                                documentHeaderCell = excelSheet.Cells[i, 9].value.ToUpper();
-                                int findStr = documentHeaderCell.IndexOf("CABINET");
-                                string number = documentHeaderCell.Substring(0, findStr);
-                                int fileNum = Int16.Parse(pcccLocationArray[l, 2]);
-                                fileNum += Int32.Parse(number);
-                                pcccLocationArray[l, 4] = fileNum.ToString();
-                            }
-                        }
-                    }
+                    rCount += 1;
                 }
             }
-        }
+
+            /// This block to remove with forwarding arrays to class
+            Worksheet newWorksheet;
+            newWorksheet = excelBook.Worksheets.Add();
+            newWorksheet.Range["A1","E8" ].Value2 = pcccLocationArray;
+            newWorksheet.Range["G1", "H4"].Value2 = aeArray;
+       }
     }
 }
