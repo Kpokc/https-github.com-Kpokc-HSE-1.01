@@ -17,8 +17,67 @@ namespace HSE_1._01
         {
             for (int file = 0; file < filesArray.Length; file++){
 
-                /*try
-                {*/
+                /*Workbook excelBook = excelApp.Workbooks.Open(filesArray[file]);
+                _Worksheet excelSheet = excelBook.Sheets[1];
+                Range excelRange = excelSheet.UsedRange;
+
+                //sendMsg.sendMessage(arr[arri]);
+
+                string sheetCellValue = excelSheet.Cells[2, 2].value;
+                if (sheetCellValue == "102" || sheetCellValue == "101")
+                {
+                    Receipts forward = new Receipts();
+                    excelSheet.Name = "Receipt";
+                    forward.Receipt(ref excelSheet, ref excelBook);
+                }
+                else if (sheetCellValue == "602" || sheetCellValue == "601")
+                {
+                    Shipments forward = new Shipments();
+                    excelSheet.Name = "Shipments";
+                    forward.Shipment(ref excelSheet, ref excelBook);
+                }
+                else
+                {
+                    // Delete two left columns
+                    int colCount = excelRange.Columns.Count;
+                    for (int twoLeftColumns = 1; twoLeftColumns <= 2; twoLeftColumns++)
+                    {
+                        Range column = (Range)excelSheet.Columns[1];
+                        column.Delete();
+                    }
+
+                    // Delete top five rows from Backup
+                    for (int fiveToprows = 1; fiveToprows <= 5; fiveToprows++)
+                    {
+                        Range line = (Range)excelSheet.Rows[1];
+                        line.Delete();
+                    }
+
+                    // Delete bottom five rows from Backup
+                    int rowCount = excelRange.Rows.Count;
+                    for (int fiveToprows = 1; fiveToprows <= 5; fiveToprows++)
+                    {
+                        Range line = (Range)excelSheet.Rows[rowCount - 4];
+                        line.Delete();
+                    }
+
+                    // Delete Second row
+                    Range midLine = (Range)excelSheet.Rows[2];
+                    midLine.Delete();
+
+                    // Borders
+                    excelRange.Borders.LineStyle = XlLineStyle.xlContinuous;
+                    excelSheet.Name = "Current stock";
+                    SplitAndCountStock forward = new SplitAndCountStock();
+                    forward.Stock(ref excelSheet, ref excelBook);
+                    //Stock(ref excelSheet);
+
+                }*/
+
+
+
+                try
+                {
                     Workbook excelBook = excelApp.Workbooks.Open(filesArray[file]);
                     _Worksheet excelSheet = excelBook.Sheets[1];
                     Range excelRange = excelSheet.UsedRange;
@@ -33,13 +92,14 @@ namespace HSE_1._01
                     }
                     else if (sheetCellValue == "602" || sheetCellValue == "601")
                     {
+                        Shipments forward = new Shipments();
                         excelSheet.Name = "HSE Shipments";
-                        //ShipmentsReceits(ref excelSheet);
+                        forward.Shipment(ref excelSheet, ref excelBook);
                     }
 
                     // Temporary comment Stock section
 
-                    /*else 
+                    else
                     {
                         // Delete two left columns
                         int colCount = excelRange.Columns.Count;
@@ -78,31 +138,28 @@ namespace HSE_1._01
                             forward.Stock(ref excelSheet, ref excelBook);
 
                         }
-                    }*/
-                    
-                    // This block should be removed or moved somewhere else
-                    excelBook.SaveAs(@"C:\Users\ssladmin\Desktop\Weekly rep\HSE 2 Invoice.xlsx");
-                    excelBook.Close(true);
-                    excelApp.Quit();
-                    System.Runtime.InteropServices.Marshal.ReleaseComObject(excelApp);
-            /*}
+                    }
+                }
 
                 catch (Exception ex)
-            {
-                Form1 msg = new Form1();
+                {
+                    Form1 msg = new Form1();
                     msg.sendMessage("Error occurred " + ex);
-            }
+                }
 
                 finally
-            {*/
+                {
+                    excelApp.Quit();
                     GC.Collect();
                     GC.WaitForPendingFinalizers();
 
-                /*    // Notify User that Reports were finished
+                    // Notify User that Reports were finished
                     Form1 msg = new Form1();
                     msg.sendMessage("Finished!");
-                }*/
+                }
             }
+            // This block should be removed or moved somewhere else
+            
         }
     }
 }

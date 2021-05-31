@@ -9,15 +9,15 @@ using Range = Microsoft.Office.Interop.Excel.Range;
 
 namespace HSE_1._01
 {
-    class Receipts
+    class Shipments
     {
         Application excelApp = new Microsoft.Office.Interop.Excel.Application();
 
-        public void Receipt(ref _Worksheet excelSheet, ref Workbook excelBook)
+        public void Shipment(ref _Worksheet excelSheet, ref Workbook excelBook)
         {
             // User notification
             Form1 msg = new Form1();
-            msg.sendMessage("Start Counting Receipts?");
+            msg.sendMessage("Start Counting Shipments?");
 
             Range excelRange = excelSheet.UsedRange;
 
@@ -46,7 +46,7 @@ namespace HSE_1._01
             DayOfWeek myFirstDOW = myCI.DateTimeFormat.FirstDayOfWeek;
 
             /// Below block gets week number from the first row ///
-            string excelDate = excelSheet.Cells[2, 11].value.ToString();
+            string excelDate = excelSheet.Cells[2, 10].value.ToString();
             var tempDate = DateTime.Parse(excelDate);
             var tempWeek = myCal.GetWeekOfYear(tempDate, myCWR, myFirstDOW) - 1;
 
@@ -55,7 +55,7 @@ namespace HSE_1._01
             var reversalExists = false; // used later to send notification
 
             // PCCC Department Lists and array
-            string[,] pcccReceiptsArray = {
+            string[,] pcccShipmentsArray = {
                 // LOCATION // NUMBER OF TRIPS // FILES RECEIVED // BOXES RECEIVED // CABINETS RECEIVED
                 { "Shantalla", "0", "0", "0", "0" },
                 { "Athenry", "0", "0", "0", "0" },
@@ -67,11 +67,11 @@ namespace HSE_1._01
                 { "Mervue", "0", "0", "0", "0" }
             };
             /////////////////////////////////////////////////////////////////////////////////////
-            
+
             // AE Department Lists and array
-            string[,] aeReceiptsArray = {
+            string[,] aeShipmentsArray = {
                 // Unit // QTY
-                { "Nr of Receipts", "0" },
+                { "Nr of Shipments", "0" },
                 { "Cards", "0"},
                 { "Register", "0"},
                 { "Fracture", "0"}
@@ -82,7 +82,7 @@ namespace HSE_1._01
             for (int i = 2; i <= excelRange.Rows.Count; i++)
             {
                 /// Below block gets week number of each next "row" ///
-                excelDate = excelSheet.Cells[i, 11].value.ToString();
+                excelDate = excelSheet.Cells[i, 10].value.ToString();
                 // parse it to temporary date
                 tempDate = DateTime.Parse(excelDate);
                 // Finds to which week number of the year "tempDate" belongs
@@ -134,11 +134,11 @@ namespace HSE_1._01
                     for (int l = 0; l < 8; l++)
                     {
                         // Add one to each location if found in cell
-                        if (cellValue.Contains(pcccReceiptsArray[l, 0].ToUpper()))
+                        if (cellValue.Contains(pcccShipmentsArray[l, 0].ToUpper()))
                         {
-                            int num = Int16.Parse(pcccReceiptsArray[l, 1]);
+                            int num = Int16.Parse(pcccShipmentsArray[l, 1]);
                             num++;
-                            pcccReceiptsArray[l, 1] = num.ToString();
+                            pcccShipmentsArray[l, 1] = num.ToString();
 
                             // Add file qty to Location
                             if ((cellValue.Contains("FILE")))
@@ -146,9 +146,9 @@ namespace HSE_1._01
                                 documentHeaderCell = excelSheet.Cells[i, 9].value.ToUpper();
                                 int findStr = documentHeaderCell.IndexOf("FILE");
                                 string number = documentHeaderCell.Substring(0, findStr);
-                                int fileNum = Int16.Parse(pcccReceiptsArray[l, 2]);
+                                int fileNum = Int16.Parse(pcccShipmentsArray[l, 2]);
                                 fileNum += Int32.Parse(number);
-                                pcccReceiptsArray[l, 2] = fileNum.ToString();
+                                pcccShipmentsArray[l, 2] = fileNum.ToString();
                             }
 
                             // Add box qty to Location
@@ -157,9 +157,9 @@ namespace HSE_1._01
                                 documentHeaderCell = excelSheet.Cells[i, 9].value.ToUpper();
                                 int findStr = documentHeaderCell.IndexOf("B_");
                                 string number = documentHeaderCell.Substring(0, findStr);
-                                int fileNum = Int16.Parse(pcccReceiptsArray[l, 3]);
+                                int fileNum = Int16.Parse(pcccShipmentsArray[l, 3]);
                                 fileNum += Int32.Parse(number);
-                                pcccReceiptsArray[l, 3] = fileNum.ToString();
+                                pcccShipmentsArray[l, 3] = fileNum.ToString();
                             }
 
                             // Add Cabinets qty to Location
@@ -168,9 +168,9 @@ namespace HSE_1._01
                                 documentHeaderCell = excelSheet.Cells[i, 9].value.ToUpper();
                                 int findStr = documentHeaderCell.IndexOf("CABINET");
                                 string number = documentHeaderCell.Substring(0, findStr);
-                                int fileNum = Int16.Parse(pcccReceiptsArray[l, 4]);
+                                int fileNum = Int16.Parse(pcccShipmentsArray[l, 4]);
                                 fileNum += Int32.Parse(number);
-                                pcccReceiptsArray[l, 4] = fileNum.ToString();
+                                pcccShipmentsArray[l, 4] = fileNum.ToString();
                             }
                         }
                     }
@@ -181,19 +181,19 @@ namespace HSE_1._01
                     {
                         if (!cellValue.Contains("PART OF"))
                         {
-                            int receiptsNum = Int16.Parse(aeReceiptsArray[0, 1]);
+                            int receiptsNum = Int16.Parse(aeShipmentsArray[0, 1]);
                             receiptsNum++;
-                            aeReceiptsArray[0, 1] = receiptsNum.ToString();
-                        
+                            aeShipmentsArray[0, 1] = receiptsNum.ToString();
+
                             // Add to Cards Stock (Material Column)
                             if (materialCellValue.Contains("AE CARDS"))
                             {
                                 documentHeaderCell = excelSheet.Cells[i, 9].value.ToUpper();
                                 int findStr = documentHeaderCell.IndexOf("B_");
                                 string number = documentHeaderCell.Substring(0, findStr);
-                                int fileNum = Int16.Parse(aeReceiptsArray[1, 1]);
+                                int fileNum = Int16.Parse(aeShipmentsArray[1, 1]);
                                 fileNum += Int32.Parse(number);
-                                aeReceiptsArray[1, 1] = fileNum.ToString();
+                                aeShipmentsArray[1, 1] = fileNum.ToString();
                             }
 
                             // Add to Registers Stock (Material Column)
@@ -202,9 +202,9 @@ namespace HSE_1._01
                                 documentHeaderCell = excelSheet.Cells[i, 9].value.ToUpper();
                                 int findStr = documentHeaderCell.IndexOf("REGISTER");
                                 string number = documentHeaderCell.Substring(0, findStr);
-                                int fileNum = Int16.Parse(aeReceiptsArray[2, 1]);
+                                int fileNum = Int16.Parse(aeShipmentsArray[2, 1]);
                                 fileNum += Int32.Parse(number);
-                                aeReceiptsArray[2, 1] = fileNum.ToString();
+                                aeShipmentsArray[2, 1] = fileNum.ToString();
                             }
 
                             // Add to Fracture Stock (Material Column)
@@ -213,9 +213,9 @@ namespace HSE_1._01
                                 documentHeaderCell = excelSheet.Cells[i, 9].value.ToUpper();
                                 int findStr = documentHeaderCell.IndexOf("FRACTURE");
                                 string number = documentHeaderCell.Substring(0, findStr);
-                                int fileNum = Int16.Parse(aeReceiptsArray[3, 1]);
+                                int fileNum = Int16.Parse(aeShipmentsArray[3, 1]);
                                 fileNum += Int32.Parse(number);
-                                aeReceiptsArray[3, 1] = fileNum.ToString();
+                                aeShipmentsArray[3, 1] = fileNum.ToString();
 
                             }
                         }
@@ -245,11 +245,11 @@ namespace HSE_1._01
             /// This block to remove with forwarding arrays to class
             Worksheet newWorksheet;
             newWorksheet = excelBook.Worksheets.Add();
-            newWorksheet.Name = "ReceiptsResult";
-            newWorksheet.Range["A1","E8" ].Value2 = pcccReceiptsArray;
-            newWorksheet.Range["G1", "H4"].Value2 = aeReceiptsArray;
+            newWorksheet.Name = "ShipmentsResult";
+            newWorksheet.Range["A1", "E8"].Value2 = pcccShipmentsArray;
+            newWorksheet.Range["G1", "H4"].Value2 = aeShipmentsArray;
 
-            excelBook.SaveAs(@"C:\Users\ssladmin\Desktop\Weekly rep\HSE Receipts.xlsx");
+            excelBook.SaveAs(@"C:\Users\ssladmin\Desktop\Weekly rep\HSE Shipments.xlsx");
             excelBook.Close(true);
             excelApp.Quit();
             System.Runtime.InteropServices.Marshal.ReleaseComObject(excelApp);

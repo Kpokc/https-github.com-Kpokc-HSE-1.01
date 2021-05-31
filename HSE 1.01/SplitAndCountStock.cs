@@ -278,13 +278,18 @@ namespace HSE_1._01
             createSheet(pcccList, "PCCC Stocks", pcccArray, ref excelBook);
             createSheet(bloodList, "Blood Stocks", bloodArray, ref excelBook);
 
+            excelBook.SaveAs(@"C:\Users\ssladmin\Desktop\Weekly rep\HSE Stock.xlsx");
+            excelBook.Close(true);
+            excelApp.Quit();
+            System.Runtime.InteropServices.Marshal.ReleaseComObject(excelApp);
         }
 
-        static void createSheet(List<string> arrayList, string sheetName, string[,] array_count, ref Workbook excelBook) 
+        void createSheet(List<string> arrayList, string sheetName, string[,] array_count, ref Workbook excelBook) 
         {
+            Workbook newWorkBook = excelApp.Workbooks.Add();
             Form1 msg = new Form1();
             Worksheet newWorksheet;
-            newWorksheet = excelBook.Worksheets.Add();
+            newWorksheet = newWorkBook.Worksheets.Add();
             newWorksheet.Name = sheetName;
 
             // Headers
@@ -360,6 +365,8 @@ namespace HSE_1._01
             Range excelRangeSmall = newWorksheet.Range["Q1", "R5"];
             excelRangeSmall.Borders.LineStyle = XlLineStyle.xlContinuous;
 
+            newWorkBook.SaveAs(@"C:\Users\ssladmin\Desktop\Weekly rep\" + sheetName + " Stock.xlsx");
+            newWorkBook.Close(true);
         }
     }
 }
