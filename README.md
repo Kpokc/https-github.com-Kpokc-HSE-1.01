@@ -5,7 +5,7 @@
 
  - Using C# language, develop an app to automate monthly invoices (6 departments at the first stage).
  - Bring all recent and further departments to a standard invoicing schema.
- - Reduce necessary time consumption for invoicing from 40+ hours to roughly 1 minute.
+ - Reduce necessary time consumption for invoicing from 3+ hours to roughly 1 minute.
 
 
 ## FAQ
